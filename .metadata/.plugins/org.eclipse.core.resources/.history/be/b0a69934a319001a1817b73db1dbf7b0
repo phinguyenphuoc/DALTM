@@ -1,0 +1,254 @@
+package daltm;
+
+import java.awt.event.ActionEvent;
+import java.io.IOException;
+import java.awt.Container;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Scanner;
+import java.util.Stack;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+public class Server extends JFrame implements ActionListener{
+	JPanel pn,pn1,pn2;
+	JLabel processing;
+	JTextArea output;
+	Stack stack;
+	Stack stackResult;
+	String number;
+	ServerSocket server;
+	public ArrayList<String> postFix;
+	public static void main(String[] args) {
+		Server sv = new Server(5000);
+	}
+//	public boolean isNumeric(String c) {
+//	    try {
+//	        int d = Integer.parseInt(c);
+//	    } catch (NumberFormatException | NullPointerException nfe) {
+//	        return false;
+//	    }
+//	    return true;
+//	}
+//	// so sanh do uu tien
+//   public boolean hasPrecedence(String op1, String op2) 
+//    {
+//        if (op2.equals("(") || op2.equals(")")) 
+//            return false; 
+//        if ((op1.equals("*") || op1.equals("/")) && (op2.equals("+") || op2.equals("-"))) { 
+//            return false;
+//        }
+//        if (op1.equals("^") && (op2.equals("+") || op2.equals("-") || op2.equals("*") || op2.equals("/"))) 
+//            return false; 
+//        else
+//            return true; 
+//    }
+//   public boolean isTrigonometric(String s) {
+//	   if(s.equals("sin") || s.equals("cos") || s.equals("tan") || s.equals("cot") || s.equals("log")) {
+//		   return true; 
+//	   }
+//	   return false;
+//   }
+//	  
+//	public void goThrough(String s) {
+//		String temp="";
+//		String trigonometric="";
+//		for (int i = 0; i < s.length(); i++){
+//		    char c = s.charAt(i);	    
+//		    if(isNumeric(String.valueOf(c))==true) {
+//		    	temp += c;
+//		    }else if(Character.isAlphabetic(c)==true) {
+//		    	trigonometric += c;
+//		    }else if(c==')') {
+//		    	if(temp!="") {
+//			    	postFix.add(temp);
+//			    	temp = "";
+//		    	}
+//		    	String t = String.valueOf(stack.pop());
+//		    	while(t!="(") {
+//		    		postFix.add(t);
+//		    		t =  String.valueOf(stack.pop());
+//		    	}	
+//		    }else {
+//		    	if(temp!="") {
+//			    	postFix.add(temp);
+//			    	temp = "";	
+//		    	}
+//		    	if(c=='+' || c=='-' || c=='/' || c=='*' || c=='^') {
+////			    	if(!stack.empty() && hasPrecedence(String.valueOf(c), String.valueOf(stack.peek()))) {
+////			    		postFix.add(String.valueOf(stack.pop()));
+////			    		stack.push(String.valueOf(c));
+////			    	}else {
+////			    		stack.push(String.valueOf(c));
+////			    	}
+//		    		String a = "";
+//		    		String b = "";
+//		    		while(!stack.empty() && hasPrecedence(b = Character.toString(c), a=(String) stack.peek())==true) {
+//			    		postFix.add(String.valueOf(stack.pop()));
+//			    		System.out.println(c +" - " +a);
+//			    	}
+//			    	stack.push(String.valueOf(c));
+//		    	}else {
+//		    		if(isTrigonometric(trigonometric)){
+//			    		stack.push(trigonometric);
+//			    		trigonometric = "";
+//			    	}
+//			    	stack.push("(");
+//		    	}	    	
+//		    }
+//		    		    		    
+//	    	if(i ==s.length()-1) {
+//		    	if(temp!="") {
+//			    	postFix.add(temp);
+//		    	}
+//	    		while(!stack.empty()) {
+//	    			postFix.add(String.valueOf(stack.pop()));
+//	    		}
+//	    	}
+//		}
+//	}
+//    public double applyOp(String op, double a, double b) 
+//    { 
+//        switch (op) 
+//        { 
+//        case "+": 
+//            return b + a; 
+//        case "-": 
+//            return b - a; 
+//        case "*": 
+//            return b * a; 
+//        case "/": 
+//            if (a == 0) 
+//                throw new
+//                UnsupportedOperationException("Cannot divide by zero"); 
+//            return b / a;
+//        case "^":
+//        	return Math.pow(b,a);
+//        } 
+//        return 0; 
+//    } 
+//	public double result(ArrayList<String> p) {
+//		for (String s : p) {
+//		    if(isNumeric(s)) {
+//		    	stackResult.push(s);
+//		    }else {
+//		    	if(isTrigonometric(s)) {
+//		    		double a = Double.parseDouble(stackResult.pop().toString());
+//		    		switch (s) {
+//					case "sin":
+//						a = Math.PI/180*a;
+//			    		stackResult.push(Math.sin(a));
+//						break;
+//					case "cos":
+//						a = Math.PI/180*a;
+//			    		stackResult.push(Math.cos(a));
+//						break;
+//					case "tan":
+//						a = Math.PI/180*a;
+//			    		stackResult.push(Math.tan(a));
+//						break;
+//					case "cot":
+//						a = Math.PI/180*a;
+//			    		stackResult.push(1/(Math.tan(a)));
+//						break;
+//					case "log":
+//						stackResult.push(Math.log(a));
+//						break;
+//					}
+//
+//		    	}else {
+//			    	double a = Double.parseDouble(stackResult.pop().toString());
+//			    	double b = Double.parseDouble(stackResult.pop().toString());
+//			    	double result = applyOp(s, a, b);
+//			    	stackResult.push(String.valueOf(result));
+//		    	}
+//		    }
+//		}
+//		return Double.parseDouble(stackResult.pop().toString());
+//	}
+//	public void printPostfix(ArrayList<String> p) {
+//		for (String s : p) {
+//		    System.out.print(s+" ");
+//		}
+//		System.out.println("");
+//	}
+	public Server(int port) {
+		pn=new JPanel();
+		pn1=new JPanel(new GridLayout(1,1));
+		pn2=new JPanel(new FlowLayout());
+		
+		processing = new JLabel("Processing");
+		output = new JTextArea(10,40);
+		
+		pn1.add(processing);
+		pn2.add(output);
+		
+		pn.add(pn1);
+		pn.add(pn2);
+		
+		JFrame jf = new JFrame("Server");
+		jf.add(pn);
+		jf.setSize(500,350);//set the size
+		jf.setLocation(600,400);//set the location		  
+		jf.setVisible(true);
+		
+//		stack = new Stack();
+//		stackResult = new Stack();
+//		postFix = new ArrayList();
+		
+		try {
+			server = new ServerSocket(port);
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		Socket soc = null;
+		String s = "Waitting connection\n";
+		output.setText(s);
+		while(true) {
+			try {			
+				//output.setText("Waitting connection\n");
+				soc = server.accept();				
+				s+=  "Connected 1 device\n";
+				output.setText(s);
+				//System.out.print(output.getText() + "Connected 1 device\n");
+//				DataInputStream in = new DataInputStream(soc.getInputStream());
+//				DataOutputStream out = new  DataOutputStream(soc.getOutputStream());
+//				while(true) {
+//	//				String c = in.readUTF();
+//	//				output.setText(output.getText() + "CLIENT: " + c + "\n");
+//	//				this.goThrough(c);
+//	//				printPostfix(postFix);
+//	//				double result = this.result(this.postFix);
+//	//				out.writeUTF(result+"");
+//	//				output.setText(output.getText() + "SERVER: " + result + "\n");
+//	//				postFix.clear();
+//				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			new CalculateThread(soc).start();
+		}
+	}
+	@Override
+	public void actionPerformed(ActionEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	//	reconnect
+	// nhieu connect
+	// reset server
+}

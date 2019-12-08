@@ -1,0 +1,28 @@
+package daltm;
+
+public class test {
+
+	public static void main(String[] args) {
+		String result = "(-4)/(-4)/(-4)";
+		int l = result.length()-1;
+		int i = 0;
+		while(i<=result.length()) {
+			char c = result.charAt(i);        
+		    if(i==0 && c=='-') {
+		    	result= "0" + result;
+		    	continue;
+		    }
+//		    if(i==0 && c=='-'&& (result.charAt(i+1)=='*' || result.charAt(i+1)=='/')) {
+//		    	result= "(0" + result.substring(0,i+2) + ")" + result.substring(i+2,l+1);
+//		    	System.out.println(result);
+//		    	continue;
+//		    }
+		    if(i!=0 && c=='-' && result.charAt(i-1)=='(') {
+		    	result = result.substring(0,i) + "0" +result.substring(i,result.length());
+		    }
+		    i++;
+		}
+		System.out.println(result);
+	}
+
+}
