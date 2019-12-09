@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Scanner;
@@ -15,6 +16,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
@@ -24,6 +26,7 @@ public class Client extends JFrame implements ActionListener{
 	JLabel request, respond;
 	JTextField input;
 	JTextArea output;
+	JScrollPane sc;
 	Socket soc;
 	public static void main(String[] args) {
 		Client cl = new Client("localhost", 5000);
@@ -52,13 +55,14 @@ public class Client extends JFrame implements ActionListener{
 		
 		input = new JTextField(30);
 		output = new JTextArea(10, 40);
+		sc = new JScrollPane(output);
 		
 		pn1.add(request);
 		pn3.add(respond);
 		pn2.add(input);
 		pn2.add(btn1);
 		pn2.add(btn2);
-		pn4.add(output);
+		pn4.add(sc);
 		
 		pn.add(pn1);
 		pn.add(pn2);
@@ -70,6 +74,7 @@ public class Client extends JFrame implements ActionListener{
 		jf.setSize(500,350);//set the size
 		jf.setLocation(600,400);//set the location		  
 		jf.setVisible(true);
+		jf.setResizable(false);
 		try {
 			soc = new Socket(ipaddr,port);
 			output.setText("Connected to: localhost");
@@ -86,8 +91,8 @@ public class Client extends JFrame implements ActionListener{
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == btn1) {
 			try {
-				DataOutputStream out = new  DataOutputStream(soc.getOutputStream());
-				out.writeUTF(input.getText());
+				DataOutputStream out = new  DataOutputStream(soc.getOutputStream());				
+				out.writeUTF(InetAddress.getLocalHost()+":"+input.getText());
 				output.setText(output.getText() + "\nRequest:" + input.getText());
 			} catch (IOException e1) {
 				e1.printStackTrace();

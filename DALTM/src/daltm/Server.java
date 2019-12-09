@@ -10,6 +10,7 @@ import java.awt.event.ActionListener;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -21,12 +22,14 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 public class Server extends JFrame implements ActionListener{
 	JPanel pn,pn1,pn2;
 	JLabel processing;
-	JTextArea output;
+	public JTextArea output;
+	JScrollPane sc;
 	Stack stack;
 	Stack stackResult;
 	String number;
@@ -43,19 +46,20 @@ public class Server extends JFrame implements ActionListener{
 		
 		processing = new JLabel("Processing");
 		output = new JTextArea(10,40);
+		sc = new JScrollPane(output);
 		
 		pn1.add(processing);
-		pn2.add(output);
+		pn2.add(sc);
 		
 		pn.add(pn1);
 		pn.add(pn2);
 		
 		JFrame jf = new JFrame("Server");
 		jf.add(pn);
-		jf.setSize(500,350);//set the size
-		jf.setLocation(600,400);//set the location		  
+		jf.setSize(500,350);
+		jf.setLocation(600,400);	  
 		jf.setVisible(true);
-		
+		jf.setResizable(false);
 		
 		try {
 			server = new ServerSocket(port);
@@ -63,31 +67,18 @@ public class Server extends JFrame implements ActionListener{
 			e1.printStackTrace();
 		}
 		Socket soc = null;
-		String s = "Waitting connection\n";
-		output.setText(s);
+//		String s = "Waitting connection\n";
+//		output.setText(s);
 		while(true) {
 			try {			
-				//output.setText("Waitting connection\n");
-				soc = server.accept();				
-				s+=  "Connected 1 device\n";
-				output.setText(s);
-				//System.out.print(output.getText() + "Connected 1 device\n");
-//				DataInputStream in = new DataInputStream(soc.getInputStream());
-//				DataOutputStream out = new  DataOutputStream(soc.getOutputStream());
-//				while(true) {
-//	//				String c = in.readUTF();
-//	//				output.setText(output.getText() + "CLIENT: " + c + "\n");
-//	//				this.goThrough(c);
-//	//				printPostfix(postFix);
-//	//				double result = this.result(this.postFix);
-//	//				out.writeUTF(result+"");
-//	//				output.setText(output.getText() + "SERVER: " + result + "\n");
-//	//				postFix.clear();
-//				}
+//				output.setText(s);
+				soc = server.accept();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			new CalculateThread(soc).start();
+			CalculateThread cal =new CalculateThread(soc,this);
+			cal.start();
+				
 		}
 	}
 	@Override

@@ -8,23 +8,28 @@ public class test {
 		return false;
 	}
 	public static void main(String[] args) {
-		String s = "2+-4/-2*-3";
+		String result = "++++1+++++++++++1";
 		int i = 0;
-		while(i<s.length()) {
-			char c = s.charAt(i);
-			if(c=='-' && isOperator(s.charAt(i-1))) {
+		while(i<result.length()) {
+			char c = result.charAt(i);
+			if(i==0 && c=='+') {
+				result = result.substring(i+1,result.length());
+				System.out.println(result);
+				continue;
+			}
+			if(c=='+' && result.charAt(i+1)=='+') {
 				int j;
-				for(j=i; j<s.length();j++) {
-					if(isOperator(s.charAt(j))==false) {
+				for(j=i; j<result.length();j++) {
+					if(result.charAt(j)!='+') {
 						break;
 					}
 				}
-				s = s.substring(0,i) + "(" +s.substring(i,j+1)+")"+s.substring(j+1,s.length());
+				result = result.substring(0,i+1)+result.substring(j,result.length());
+				System.out.println(result);
 			}
 			i++;
 		}
-		System.out.println(s);
-		int a = 2+(-4);
+		System.out.println(result);
 	}
 
 }

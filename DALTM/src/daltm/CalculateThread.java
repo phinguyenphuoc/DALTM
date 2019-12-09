@@ -3,6 +3,7 @@ package daltm;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -16,21 +17,45 @@ public class CalculateThread extends Thread{
 	Socket soc;
 	Stack stack;
 	Stack stackResult;
-	ServerSocket server;
+	Server server;
 	public ArrayList<String> postFix;
-	public CalculateThread(Socket clientSocket) {
+	public CalculateThread(Socket clientSocket,Server server) {
 		this.soc = clientSocket;
 		stack = new Stack();
 		stackResult = new Stack();
 		postFix = new ArrayList();
+		this.server = server;
 	}
-	// Tien xu li chuoi
 	public boolean isOperator(char c) {
 		if(c=='+' || c=='-' || c=='/' || c=='*' || c=='^') {
 			return true;
 		}
 		return false;
 	}
+	// rut gon dau +
+	public String handleOperationPlus(String input) {
+		String result = input;
+		int i = 0;
+		while(i<result.length()-1) {
+			char c = result.charAt(i);
+			if(i==0 && c=='+') {
+				result = result.substring(i+1,result.length());
+				continue;
+			}
+			if(c=='+' && result.charAt(i+1)=='+') {
+				int j;
+				for(j=i; j<result.length();j++) {
+					if(result.charAt(j)!='+') {
+						break;
+					}
+				}
+				result = result.substring(0,i+1)+result.substring(j,result.length());
+			}
+			i++;
+		}
+		return result;	
+	}
+	// rut gon dau -
 	public String handleOperationNegative(String input) {
 		String result = input;
 		int i = 0;
@@ -69,7 +94,7 @@ public class CalculateThread extends Thread{
 	    }
 	    return true;
 	}
-	// so sanh do uu tien
+	// so sanh do uu tien op2: stackpeek
    public boolean hasPrecedence(String op1, String op2) 
     {
         if (op2.equals("(") || op2.equals(")")) 
@@ -103,11 +128,13 @@ public class CalculateThread extends Thread{
 			    	postFix.add(temp);
 			    	temp = "";
 		    	}
+		    	//pop het cho den khi gap (
 		    	String t = String.valueOf(stack.pop());
 		    	while(t!="(") {
 		    		postFix.add(t);
 		    		t =  String.valueOf(stack.pop());
-		    	}	
+		    	}
+		    // toan tu hoac chay chet vong lap
 		    }else {
 		    	if(temp!="") {
 			    	postFix.add(temp);
@@ -128,7 +155,7 @@ public class CalculateThread extends Thread{
 			    	stack.push("(");
 		    	}	    	
 		    }
-		    		    		    
+		    //het vong lap		    		    
 	    	if(i ==s.length()-1) {
 		    	if(temp!="") {
 			    	postFix.add(temp);
@@ -153,8 +180,7 @@ public class CalculateThread extends Thread{
             try {
             	return b/a;
 			} catch (Exception e) {
-				e.printStackTrace();
-				
+				e.printStackTrace();			
 			}
             
         case "^":
@@ -195,10 +221,28 @@ public class CalculateThread extends Thread{
 					}
 
 		    	}else {
-			    	double a = Double.parseDouble(stackResult.pop().toString());
-			    	double b = Double.parseDouble(stackResult.pop().toString());
-			    	double result = applyOp(s, a, b);
-			    	stackResult.push(String.valueOf(result));
+		    		int k = 0;
+		    		double a = 0,b = 0;
+		    		if(stackResult.isEmpty()==false) {
+		    			String s1 = stackResult.pop().toString();
+		    			a = Double.parseDouble(s1);
+		    			k++;
+		    		}else {
+		    			return 9999999;
+		    		}
+		    		if(stackResult.isEmpty()==false) {
+		    			String s2 = stackResult.pop().toString();
+		    			b = Double.parseDouble(s2);
+		    			k++;		    	
+		    		}else {
+		    			return 9999999;
+		    		}	    		
+			    	if(k==2) {
+			    		double result = applyOp(s, a, b);
+			    		stackResult.push(String.valueOf(result));
+			    	}else {
+			    		return 9999999;
+			    	}
 		    	}
 		    }
 		}
@@ -223,18 +267,38 @@ public class CalculateThread extends Thread{
 			e.printStackTrace();
 		}
 		String input = "";
+		String[] splitInput;
 		String temp = "";
 		while(true) {
 			try {
 				input = in.readUTF();
-				temp = handleOperationNegative(input);
-				System.out.println(temp);
-				goThrough(temp.replaceAll("\\s+",""));
-				double result = result(this.postFix);
-				Thread.sleep(100);
-				out.writeUTF(this.postFix.toString());
-				out.writeUTF(result+"");
-				postFix.clear();
+				System.out.println(input);
+				splitInput = input.split(":");
+				input = splitInput[1];				
+				server.output.setText(server.output.getText()+splitInput[0]+": "+splitInput[1]+"\n");
+				if(input.equals("hostip")) {
+					String ip = InetAddress.getLocalHost().toString();
+					out.writeUTF(ip);
+				}else {
+					temp = handleOperationPlus(input);
+					temp = handleOperationNegative(temp);
+					goThrough(temp.replaceAll("\\s+",""));
+					System.out.println("get here ok");
+					if(this.postFix.isEmpty()) {
+						out.writeUTF("0");
+					}else {
+						System.out.println(this.postFix);
+						double result = result(this.postFix);
+						server.output.setText(server.output.getText() + "Result: " +result +"\n");
+						Thread.sleep(100);
+						if(result!=9999999) {
+							out.writeUTF(result+"");
+						}else {
+							out.writeUTF("math error");
+						}
+						postFix.clear();
+					}
+				}
 			} catch (Exception e) {
 				
 			}
