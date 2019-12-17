@@ -179,7 +179,7 @@ public class CalculateThread extends Thread{
             return true; 
     }
 	  
-	public void goThrough(String s) {
+	public boolean goThrough(String s) {
 		String temp="";
 		String trigonometric="";
 		for (int i = 0; i < s.length(); i++){
@@ -213,14 +213,19 @@ public class CalculateThread extends Thread{
 			    	}
 			    	stack.push(String.valueOf(c));
 		    	}else {
+		    		System.out.println("A");
 		    		if(isTrigonometric(trigonometric)){
 			    		stack.push(trigonometric);
 			    		trigonometric = "";
 			    	}
+		    		// doan nay them vao de check ki tu bi loi
+		    		else {
+			    		return false;
+			    	}
 			    	stack.push("(");
 		    	}	    	
 		    }
-		    //cuoi vong lap	    		    
+		    //het vong lap		    		    
 	    	if(i ==s.length()-1) {
 		    	if(temp!="") {
 			    	postFix.add(temp);
@@ -229,7 +234,8 @@ public class CalculateThread extends Thread{
 	    			postFix.add(String.valueOf(stack.pop()));
 	    		}
 	    	}
-		} // end for
+		}
+		return true;
 	}
 	public double applyOp(String op, double a, double b) 
     { 
@@ -348,23 +354,26 @@ public class CalculateThread extends Thread{
 					temp = handleBracket(input);
 					temp = handleOperationPlus(temp);
 					temp = handleOperationNegative(temp);
-					goThrough(temp.replaceAll("\\s+",""));
-					System.out.println("get here ok");
-					if(this.postFix.isEmpty()) {
-						out.writeUTF("0");
-					}else {
-						System.out.println(this.postFix);
-						double result = result(this.postFix);
-						Thread.sleep(100);
-						if(result!=9999999) {
-							server.output.setText(server.output.getText() + "Result: " +result +"\n");
-							out.writeUTF(result+"");
+					if(goThrough(temp.replaceAll("\\s+",""))==true) {			
+						if(this.postFix.isEmpty()) {
+							out.writeUTF("0");
 						}else {
-							server.output.setText(server.output.getText() + "Result: error\n");
-							out.writeUTF("error");
+							System.out.println(this.postFix);
+							double result = result(this.postFix);
+							Thread.sleep(100);
+							if(result!=9999999) {
+								server.output.setText(server.output.getText() + "Result: " +result +"\n");
+								out.writeUTF(result+"");
+							}else {
+								server.output.setText(server.output.getText() + "Result: error\n");
+								out.writeUTF("error");
+							}
+							postFix.clear();
 						}
+					}else {
+						server.output.setText(server.output.getText() + "Result: error\n");
+						out.writeUTF("error");
 						postFix.clear();
-						stackResult.clear();
 					}
 				}
 			} catch (Exception e) {

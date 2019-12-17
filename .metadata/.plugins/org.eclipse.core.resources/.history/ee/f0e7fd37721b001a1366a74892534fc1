@@ -44,7 +44,7 @@ public class Server extends JFrame implements ActionListener{
 		pn1=new JPanel(new GridLayout(1,1));
 		pn2=new JPanel(new FlowLayout());
 		
-		processing = new JLabel("Running");
+		processing = new JLabel("Processing");
 		output = new JTextArea(20,40);
 		sc = new JScrollPane(output);
 		

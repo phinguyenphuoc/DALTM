@@ -364,7 +364,6 @@ public class CalculateThread extends Thread{
 							out.writeUTF("error");
 						}
 						postFix.clear();
-						stackResult.clear();
 					}
 				}
 			} catch (Exception e) {

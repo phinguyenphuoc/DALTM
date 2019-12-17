@@ -220,7 +220,7 @@ public class CalculateThread extends Thread{
 			    	stack.push("(");
 		    	}	    	
 		    }
-		    //cuoi vong lap	    		    
+		    //het vong lap		    		    
 	    	if(i ==s.length()-1) {
 		    	if(temp!="") {
 			    	postFix.add(temp);
@@ -229,7 +229,7 @@ public class CalculateThread extends Thread{
 	    			postFix.add(String.valueOf(stack.pop()));
 	    		}
 	    	}
-		} // end for
+		}
 	}
 	public double applyOp(String op, double a, double b) 
     { 
@@ -364,7 +364,6 @@ public class CalculateThread extends Thread{
 							out.writeUTF("error");
 						}
 						postFix.clear();
-						stackResult.clear();
 					}
 				}
 			} catch (Exception e) {

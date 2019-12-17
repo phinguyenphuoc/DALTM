@@ -46,39 +46,6 @@ public class CalculateThread extends Thread{
 	    }
 	    return true;
 	}
-	public boolean isValidInput(String input) {
-		int i = 0;
-		while(i<input.length()) {
-			char c = input.charAt(i);
-			if(Character.isAlphabetic(c)==true) {
-				switch(c) {
-					case 's':
-						if(isTrigonometric(input.substring(i,i+3))==false) {
-							i=i+3;
-							return false; 
-						}
-					case 'c':
-						if(isTrigonometric(input.substring(i,i+3))==false) {
-							i=i+3;
-							return false; 
-						}
-					case 't':
-						if(isTrigonometric(input.substring(i,i+3))==false) {
-							i=i+3;
-							return false; 
-						}
-					case 'l':
-						if(isTrigonometric(input.substring(i,i+3))==false) {
-							i=i+3;
-							return false; 
-						}
-					default: return false;
-				}
-			}
-		}		
-		return true;
-	}
-	// them ngoac cho sin cos...
 	public String handleBracket(String input) {
 		String result = input;
 		int i = 0;
@@ -91,23 +58,17 @@ public class CalculateThread extends Thread{
 				i++;
 				continue;
 			}
-			if(isTrigonometric(temp)==true) {
-				if(result.charAt(i+1)!='(') {
-					int j = i+1;
-					for(;j<result.length();j++) {
-						if(isNumeric(String.valueOf(result.charAt(j)))==true || result.charAt(j)=='.' || result.charAt(j)=='-') {
-							continue;
-						}else {
-							break;
-						}
+			if(isTrigonometric(temp)==true && result.charAt(i+1)!='(') {
+				int j = i+1;
+				for(;j<result.length();j++) {
+					if(isNumeric(String.valueOf(result.charAt(j)))==true || result.charAt(j)=='.') {
+						continue;
+					}else {
+						break;
 					}
-					result = result.substring(0,i+1)+"("+result.substring(i+1,j)+")"+result.substring(j,result.length());
-					temp="";
-				}else {
-					temp="";
 				}
+				result = result.substring(0,i)+"("+result.substring(i+1,j)+")"+result.substring(j+1,result.length());
 			}
-			i++;
 		}
 		return result;
 	}
@@ -220,7 +181,7 @@ public class CalculateThread extends Thread{
 			    	stack.push("(");
 		    	}	    	
 		    }
-		    //cuoi vong lap	    		    
+		    //het vong lap		    		    
 	    	if(i ==s.length()-1) {
 		    	if(temp!="") {
 			    	postFix.add(temp);
@@ -229,7 +190,7 @@ public class CalculateThread extends Thread{
 	    			postFix.add(String.valueOf(stack.pop()));
 	    		}
 	    	}
-		} // end for
+		}
 	}
 	public double applyOp(String op, double a, double b) 
     { 
@@ -345,8 +306,7 @@ public class CalculateThread extends Thread{
 					String ip = InetAddress.getLocalHost().toString();
 					out.writeUTF(ip);
 				}else {
-					temp = handleBracket(input);
-					temp = handleOperationPlus(temp);
+					temp = handleOperationPlus(input);
 					temp = handleOperationNegative(temp);
 					goThrough(temp.replaceAll("\\s+",""));
 					System.out.println("get here ok");
@@ -355,16 +315,14 @@ public class CalculateThread extends Thread{
 					}else {
 						System.out.println(this.postFix);
 						double result = result(this.postFix);
+						server.output.setText(server.output.getText() + "Result: " +result +"\n");
 						Thread.sleep(100);
 						if(result!=9999999) {
-							server.output.setText(server.output.getText() + "Result: " +result +"\n");
 							out.writeUTF(result+"");
 						}else {
-							server.output.setText(server.output.getText() + "Result: error\n");
 							out.writeUTF("error");
 						}
 						postFix.clear();
-						stackResult.clear();
 					}
 				}
 			} catch (Exception e) {

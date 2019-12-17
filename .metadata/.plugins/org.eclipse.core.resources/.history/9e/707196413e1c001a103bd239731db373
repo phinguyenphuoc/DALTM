@@ -22,36 +22,23 @@ public class test {
 	    return true;
 	}
 	public static void main(String[] args) {
-		String result = "sin(90)+cos90+tan90+cot90+log90+sqrt90";
+		String input = "sin(90)";
 		int i = 0;
-		String temp = "";
-		while(i<result.length()-1) {
-			char c = result.charAt(i);
+		while(i<input.length()) {
+			char c = input.charAt(i);
 			if(Character.isAlphabetic(c)==true) {
-				temp += c;
-			}else {
-				i++;
-				continue;
-			}
-			if(isTrigonometric(temp)==true) {
-				if(result.charAt(i+1)!='(') {
-					int j = i+1;
-					for(;j<result.length();j++) {
-						if(isNumeric(String.valueOf(result.charAt(j)))==true || result.charAt(j)=='.') {
-							continue;
-						}else {
-							break;
-						}
+				if(i < input.length()-4) {
+					if(isTrigonometric(input.substring(i,i+3))==false
+							|| isTrigonometric(input.substring(i,i+3))==false){
+						System.out.println(0);
 					}
-					result = result.substring(0,i+1)+"("+result.substring(i+1,j)+")"+result.substring(j,result.length());
-					temp="";
 				}else {
-					temp="";
+					System.out.println(0);
 				}
 			}
 			i++;
-		}
-		System.out.println(result);
+		}		
+		
 	}
 
 }
