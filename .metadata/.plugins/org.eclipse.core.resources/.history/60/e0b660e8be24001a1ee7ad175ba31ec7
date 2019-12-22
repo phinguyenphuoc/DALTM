@@ -33,6 +33,7 @@ public class Client extends JFrame implements ActionListener{
 	Socket soc;
 	public static void main(String[] args) {
 		Client cl = new Client("localhost", 5000);
+
 	}
 	public Client(String ipaddr, int port) {
 		JPanel pn=new JPanel();
@@ -56,7 +57,7 @@ public class Client extends JFrame implements ActionListener{
 		btn2.addActionListener(this);
 		
 		input = new JTextField(30);
-		output = new JTextArea(15, 40);
+		output = new JTextArea(10, 40);
 		sc = new JScrollPane(output);
 		
 		pn1.add(request);
@@ -79,7 +80,7 @@ public class Client extends JFrame implements ActionListener{
 		jf.setResizable(false);
 		try {
 			this.soc = new Socket(ipaddr,port);
-			output.setText("Connected server");
+			output.setText("Connected to: localhost");
 			DataInputStream in = new DataInputStream(this.soc.getInputStream());
 			jf.addWindowListener(new java.awt.event.WindowAdapter() {
 			    @Override
@@ -124,6 +125,12 @@ public class Client extends JFrame implements ActionListener{
 			}
 		}
 		if(e.getSource() == btn2) {
+			try {
+				this.soc.close();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			input.setText(""); 
 		}
 		

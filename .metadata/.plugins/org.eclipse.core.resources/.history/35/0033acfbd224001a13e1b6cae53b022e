@@ -399,31 +399,26 @@ public class CalculateThread extends Thread{
 					out.writeUTF(ip);
 					server.output.setText(server.output.getText() + "Result: " +ip +"\n");
 				}else {
-					if(isValidBracket(input)) {
-						temp = handleBracket(input);
-						temp = combinePlusAndNegative(temp);
-						temp = handleOperationPlus(temp);				
-						temp = handleOperationNegative(temp);
-						System.out.println(temp);
-						goThrough(temp.replaceAll("\\s+",""));
-						if(this.postFix.isEmpty()) {
-							out.writeUTF("0");
-							server.output.setText(server.output.getText() + "Result: " +0+"\n");
-						}else {
-							System.out.println(this.postFix);
-							double result = result(this.postFix);
-							Thread.sleep(100);
-							if(result!=9999999) {
-								server.output.setText(server.output.getText() + "Result: " +result +"\n");
-								out.writeUTF(result+"");
-							}else {
-								server.output.setText(server.output.getText() + "Result: error\n");
-								out.writeUTF("error");
-							}
-						}
+					temp = handleBracket(input);
+					temp = combinePlusAndNegative(temp);
+					temp = handleOperationPlus(temp);				
+					temp = handleOperationNegative(temp);
+					System.out.println(temp);
+					goThrough(temp.replaceAll("\\s+",""));
+					if(this.postFix.isEmpty()) {
+						out.writeUTF("0");
+						server.output.setText(server.output.getText() + "Result: " +0+"\n");
 					}else {
-						server.output.setText(server.output.getText() + "Result: error\n");
-						out.writeUTF("error");
+						System.out.println(this.postFix);
+						double result = result(this.postFix);
+						Thread.sleep(100);
+						if(result!=9999999) {
+							server.output.setText(server.output.getText() + "Result: " +result +"\n");
+							out.writeUTF(result+"");
+						}else {
+							server.output.setText(server.output.getText() + "Result: error\n");
+							out.writeUTF("error");
+						}
 					}
 				}
 			} catch (Exception e) {

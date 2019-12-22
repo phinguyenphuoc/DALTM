@@ -1,7 +1,5 @@
 package daltm;
 
-import java.util.Stack;
-
 public class test {
 	public static boolean isOperator(char c) {
 		if(c=='+' || c=='-' || c=='/' || c=='*' || c=='^') {
@@ -59,37 +57,9 @@ public class test {
 		}
 		return result;
 	}
-	public static boolean areParenthesisBalanced(String input) 
-    { 
-       /* Declare an empty character stack */
-       Stack st=new Stack(); 
-       
-       /* Traverse the given expression to  
-          check matching parenthesis */
-       for(int i=0;i<input.length();i++){
-    	  char c = input.charAt(i);
-          if (c == '(' ) {
-            st.push(c); 
-          }
-          if (c== ')') { 
-        	  if (st.isEmpty()) { 
-                   return false; 
-             }  
-             else if ( !(((char) st.pop()) == '(' && c ==')') ) { 
-                   return false; 
-             } 
-          } 
-            
-       }     
-       if (st.isEmpty()) 
-         return true; /*balanced*/
-       else {   /*not balanced*/
-             return false; 
-         }  
-    } 
 	public static void main(String[] args) {
-		String input = "))))sin(90)";
-		System.out.println(areParenthesisBalanced(input));
+		String input = "sin(+90)";
+		System.out.println(combinePlusAndNegative(input));
 	}
 
 }

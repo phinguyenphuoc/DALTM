@@ -72,12 +72,13 @@ public class test {
             st.push(c); 
           }
           if (c== ')') { 
-        	  if (st.isEmpty()) { 
+			if (st.isEmpty()) { 
                    return false; 
              }  
-             else if ( !(((char) st.pop()) == '(' && c ==')') ) { 
+             else if ( ((char) st.pop()) == '(' && c ==')' ) 
+               { 
                    return false; 
-             } 
+               } 
           } 
             
        }     
@@ -88,7 +89,7 @@ public class test {
          }  
     } 
 	public static void main(String[] args) {
-		String input = "))))sin(90)";
+		String input = "sin(+90)";
 		System.out.println(areParenthesisBalanced(input));
 	}
 
