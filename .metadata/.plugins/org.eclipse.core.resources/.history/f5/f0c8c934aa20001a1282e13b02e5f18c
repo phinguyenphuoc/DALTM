@@ -1,0 +1,64 @@
+package daltm;
+
+public class test {
+	public static boolean isOperator(char c) {
+		if(c=='+' || c=='-' || c=='/' || c=='*' || c=='^') {
+			return true;
+		}
+		return false;
+	}
+	public static boolean isTrigonometric(String s) {
+		   if(s.equals("sin") || s.equals("cos") || s.equals("tan") || s.equals("cot") || s.equals("log") || s.equals("can")) {
+			   return true; 
+		   }
+		   return false;
+	}
+	public static boolean isNumeric(String c) {
+	    try {
+	        double d = Double.parseDouble(c);
+	    } catch (NumberFormatException | NullPointerException nfe) {
+	        return false;
+	    }
+	    return true;
+	}
+	public static void main(String[] args) {
+		String input = "asin(90)+cos90+tan90+cot90+log90+can90";
+		int i = 0;
+		while(i<input.length()-3) {
+			char c = input.charAt(i);
+			if(Character.isAlphabetic(c)==true) {
+				switch(c) {
+					case 's':
+						if(isTrigonometric(input.substring(i,i+3))==false) {
+							System.out.println("false1");
+						}
+						i=i+3;
+						break;
+					case 'c':
+						if(isTrigonometric(input.substring(i,i+3))==false) {
+							System.out.println("false2"); 
+						}
+						i=i+3;
+						break;
+					case 't':
+						if(isTrigonometric(input.substring(i,i+3))==false) {
+							System.out.println("false3"); 
+						}
+						i=i+3;
+						break;
+					case 'l':
+						if(isTrigonometric(input.substring(i,i+3))==false) {
+							System.out.println("false4"); 
+						}
+						i=i+3;
+						break;
+					default: System.out.println("false5");break;
+				}
+			}else {
+				i++;
+			}
+			
+		}	
+	}
+
+}

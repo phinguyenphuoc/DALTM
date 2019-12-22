@@ -25,7 +25,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-public class Server extends JFrame implements ActionListener{
+public class Server extends JFrame{
 	JPanel pn,pn1,pn2;
 	JLabel processing;
 	public JTextArea output;
@@ -60,18 +60,15 @@ public class Server extends JFrame implements ActionListener{
 		jf.setLocation(600,400);	  
 		jf.setVisible(true);
 		jf.setResizable(false);
-		
+		jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		try {
 			server = new ServerSocket(port);
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
 		Socket soc = null;
-//		String s = "Waitting connection\n";
-//		output.setText(s);
 		while(true) {
 			try {			
-//				output.setText(s);
 				soc = server.accept();
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -81,13 +78,4 @@ public class Server extends JFrame implements ActionListener{
 				
 		}
 	}
-	@Override
-	public void actionPerformed(ActionEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	//	reconnect
-	// nhieu connect
-	// reset server
 }

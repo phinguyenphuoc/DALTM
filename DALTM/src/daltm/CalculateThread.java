@@ -1,5 +1,6 @@
 package daltm;
 
+import java.awt.event.ActionListener;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -33,7 +34,7 @@ public class CalculateThread extends Thread{
 		return false;
 	}
 	public boolean isTrigonometric(String s) {
-		   if(s.equals("sin") || s.equals("cos") || s.equals("tan") || s.equals("cot") || s.equals("log") || s.equals("sqrt")) {
+		   if(s.equals("sin") || s.equals("cos") || s.equals("tan") || s.equals("cot") || s.equals("log") || s.equals("can")) {
 			   return true; 
 		   }
 		   return false;
@@ -45,38 +46,6 @@ public class CalculateThread extends Thread{
 	        return false;
 	    }
 	    return true;
-	}
-	public boolean isValidInput(String input) {
-		int i = 0;
-		while(i<input.length()) {
-			char c = input.charAt(i);
-			if(Character.isAlphabetic(c)==true) {
-				switch(c) {
-					case 's':
-						if(isTrigonometric(input.substring(i,i+3))==false) {
-							i=i+3;
-							return false; 
-						}
-					case 'c':
-						if(isTrigonometric(input.substring(i,i+3))==false) {
-							i=i+3;
-							return false; 
-						}
-					case 't':
-						if(isTrigonometric(input.substring(i,i+3))==false) {
-							i=i+3;
-							return false; 
-						}
-					case 'l':
-						if(isTrigonometric(input.substring(i,i+3))==false) {
-							i=i+3;
-							return false; 
-						}
-					default: return false;
-				}
-			}
-		}		
-		return true;
 	}
 	// them ngoac cho sin cos...
 	public String handleBracket(String input) {
@@ -115,11 +84,16 @@ public class CalculateThread extends Thread{
 	public String handleOperationPlus(String input) {
 		String result = input;
 		int i = 0;
+		char c;
 		while(i<result.length()-1) {
-			char c = result.charAt(i);
+			c = result.charAt(i);
 			if(i==0 && c=='+') {
 				result = result.substring(i+1,result.length());
 				continue;
+			}
+			if(c=='(' && result.charAt(i+1)=='+') {
+				result = result.substring(0,i+1)+"0"+result.substring(i+1,result.length());
+				System.out.println(result);
 			}
 			if(c=='+' && result.charAt(i+1)=='+') {
 				int j;
@@ -132,14 +106,55 @@ public class CalculateThread extends Thread{
 			}
 			i++;
 		}
+		c = result.charAt(result.length()-1);
+		while(c=='+' || c=='-') {
+			result = result.substring(0,result.length()-1);
+			c = result.charAt(result.length()-1);
+		}
 		return result;	
+	}
+	public String combinePlusAndNegative(String input) {
+		String result = input;
+		int i = 0;
+		boolean isNegative = false;
+		while(i<result.length()-1) {
+			char c = result.charAt(i);
+			if((c=='+' || c=='-') && (result.charAt(i+1)=='+' || result.charAt(i+1)=='-')) {
+				System.out.println("1");
+				int j = i;
+				for(; j<result.length() - 1; j++) {
+					char operator = result.charAt(j);
+					if(operator=='+' || operator=='-') {
+						if(operator=='-') {
+							isNegative = !isNegative;
+						}
+					}else {
+						break;
+					}
+				}
+				System.out.println("alo");
+				if(isNegative) {
+					result=result.substring(0,i) + "-" + result.substring(j,result.length());
+				}else {
+					result=result.substring(0,i) + "+" + result.substring(j,result.length());
+				}
+				isNegative = false;			
+			}
+			i++;
+		}
+		return result;
 	}
 	// rut gon dau -
 	public String handleOperationNegative(String input) {
 		String result = input;
 		int i = 0;
+		char c = result.charAt(result.length()-1);
+		while(c=='-') {
+			result = result.substring(0,result.length()-1);
+			c = result.charAt(result.length()-1);
+		}
 		while(i<result.length()) {
-			char c = result.charAt(i);
+			c = result.charAt(i);
 			if(i!= 0 && c=='-' && isOperator(result.charAt(i-1))) {
 				int j;
 				for(j=i; j<result.length();j++) {
@@ -153,7 +168,7 @@ public class CalculateThread extends Thread{
 		}
 		i = 0;
 		while(i<result.length()) {
-			char c = result.charAt(i);        
+			c = result.charAt(i);        
 		    if(i==0 && c=='-') {
 		    	result= "0" + result;
 		    	continue;
@@ -166,8 +181,7 @@ public class CalculateThread extends Thread{
 		return result;
 	}
 	// so sanh do uu tien op2: stackpeek
-   public boolean hasPrecedence(String op1, String op2) 
-    {
+   public boolean hasPrecedence(String op1, String op2) {
         if (op2.equals("(") || op2.equals(")")) 
             return false; 
         if ((op1.equals("*") || op1.equals("/")) && (op2.equals("+") || op2.equals("-"))) { 
@@ -188,6 +202,7 @@ public class CalculateThread extends Thread{
 		    	temp += c;
 		    }else if(Character.isAlphabetic(c)==true) {
 		    	trigonometric += c;
+		    	
 		    }else if(c==')') {
 		    	if(temp!="") {
 			    	postFix.add(temp);
@@ -199,7 +214,7 @@ public class CalculateThread extends Thread{
 		    		postFix.add(t);
 		    		t =  String.valueOf(stack.pop());
 		    	}
-		    // toan tu hoac chay chet vong lap
+		    // toan tu (
 		    }else {
 		    	if(temp!="") {
 			    	postFix.add(temp);
@@ -280,7 +295,7 @@ public class CalculateThread extends Thread{
 					case "log":
 						stackResult.push(Math.log(a));
 						break;
-					case "sqrt":
+					case "can":
 						stackResult.push(Math.sqrt(a));
 						break;
 					}
@@ -334,7 +349,9 @@ public class CalculateThread extends Thread{
 		String input = "";
 		String[] splitInput;
 		String temp = "";
-		while(true) {
+		while(!input.equals("quit")) {
+			postFix.clear();
+			stackResult.clear();
 			try {
 				input = in.readUTF();
 				System.out.println(input);
@@ -344,14 +361,17 @@ public class CalculateThread extends Thread{
 				if(input.equals("hostip")) {
 					String ip = InetAddress.getLocalHost().toString();
 					out.writeUTF(ip);
+					server.output.setText(server.output.getText() + "Result: " +ip +"\n");
 				}else {
 					temp = handleBracket(input);
-					temp = handleOperationPlus(temp);
+					temp = combinePlusAndNegative(temp);
+					temp = handleOperationPlus(temp);				
 					temp = handleOperationNegative(temp);
+					System.out.println(temp);
 					goThrough(temp.replaceAll("\\s+",""));
-					System.out.println("get here ok");
 					if(this.postFix.isEmpty()) {
 						out.writeUTF("0");
+						server.output.setText(server.output.getText() + "Result: " +0+"\n");
 					}else {
 						System.out.println(this.postFix);
 						double result = result(this.postFix);
@@ -363,14 +383,21 @@ public class CalculateThread extends Thread{
 							server.output.setText(server.output.getText() + "Result: error\n");
 							out.writeUTF("error");
 						}
-						postFix.clear();
-						stackResult.clear();
 					}
 				}
 			} catch (Exception e) {
-				
+				e.printStackTrace();
 			}
 		}
+		try {
+			in.close();
+			out.close();
+			soc.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		
 	}
 }
